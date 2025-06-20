@@ -1,3 +1,4 @@
+#CI de Nivel 01 - Disparo manual com apenas 1 clique
 # Nome do workflow exibido na aba "Actions" do GitHub
 name: 'Execução manual'
 

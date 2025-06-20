@@ -1,3 +1,4 @@
+#CI de Nivel 0102 - Disparo agendado
 # Nome do workflow exibido na aba "Actions" do GitHub
 name: 'Execução agendada'
 
