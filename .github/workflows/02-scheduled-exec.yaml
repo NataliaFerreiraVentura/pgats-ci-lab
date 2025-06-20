@@ -5,7 +5,7 @@ name: 'Execução agendada'
 # Neste caso, é necessário acionar manualmente (botão "Run workflow")
 on:
   schedule:
-    - cron: "0 7 * * *" # Executa de segunda a sexta-feira, às 7:00 AM UTC
+    - cron: "0 10 * * *" # Executa de segunda a sexta-feira, às 7:00 AM UTC
 
 # Definição dos jobs (tarefas que serão executadas)
 jobs:
