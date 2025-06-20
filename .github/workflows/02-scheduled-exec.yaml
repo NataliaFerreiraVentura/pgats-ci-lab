@@ -1,5 +1,5 @@
 # Nome do workflow exibido na aba "Actions" do GitHub
-name: 'Execução manual'
+name: 'Execução agendada'
 
 # Definição do gatilho que inicia o workflow
 # Neste caso, é necessário acionar manualmente (botão "Run workflow")
