@@ -26,6 +26,9 @@ jobs:
       - name: 'Executando testes E2E com Playwright'
         run: yarn run e2e
 
+      - name: Compactar relatório do Playwright
+        run: zip -r playwright-report.zip playwright-report
+
       # Notificação de sucesso
       - name: Notificar Discord (sucesso)
         if: success()
@@ -33,7 +36,7 @@ jobs:
         with:
           webhook_url: ${{ secrets.DISCORD_WEBHOOK_URL }}
           message: |
-            ✅ *CI passou!*  
+            🎉 **Sucesso na execução dos testes 
             Projeto: **${{ github.repository }}**  
             Branch: `${{ github.ref_name }}`  
             📄 [Ver detalhes](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }})
@@ -45,7 +48,28 @@ jobs:
         with:
           webhook_url: ${{ secrets.DISCORD_WEBHOOK_URL }}
           message: |
-            ❌ *CI falhou!*  
+            **Falha na execução do pipeline!**  
             Projeto: **${{ github.repository }}**  
             Branch: `${{ github.ref_name }}`  
             📄 [Ver detalhes](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }})
+
+      # Envio de relatório por e-mail
+      - name: Enviar relatório por e-mail
+        uses: dawidd6/action-send-mail@v6
+        with:
+          server_address: smtp.gmail.com
+          server_port: 465
+          secure: true
+          username: ${{ secrets.MAIL_USERNAME }}
+          password: ${{ secrets.MAIL_PASSWORD }}
+          subject: "✅ Relatório de Testes - ${{ github.repository }}"
+          to: seuemail@exemplo.com
+          from: Natalia QA <${{ secrets.MAIL_USERNAME }}>
+          body: |
+            Olá, time QA 👋  
+            Segue em anexo o relatório de testes gerado automaticamente pelo GitHub Actions.
+
+            ✅ Execução: ${{ github.run_number }}  
+            🔗 [Ver detalhes no GitHub](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }})
+          attachments: playwright-report.zip
+          convert_markdown: true
