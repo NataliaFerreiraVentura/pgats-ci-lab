@@ -26,34 +26,34 @@ jobs:
       - name: 'Executando testes E2E com Playwright'
         run: yarn run e2e
 
+      - name: 'Listar arquivos do relatório'
+        run: ls -lha playwright-report
+
       - name: Compactar relatório do Playwright
         run: zip -r playwright-report.zip playwright-report
 
-      # Notificação de sucesso
       - name: Notificar Discord (sucesso)
         if: success()
         uses: appleboy/discord-action@v1.2.0
         with:
           webhook_url: ${{ secrets.DISCORD_WEBHOOK_URL }}
           message: |
-            🎉 **Sucesso na execução dos testes 
+            🎉 **Sucesso na execução dos testes!**  
             Projeto: **${{ github.repository }}**  
             Branch: `${{ github.ref_name }}`  
             📄 [Ver detalhes](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }})
 
-      # Notificação de falha
       - name: Notificar Discord (falha)
         if: failure()
         uses: appleboy/discord-action@v1.2.0
         with:
           webhook_url: ${{ secrets.DISCORD_WEBHOOK_URL }}
           message: |
-            **Falha na execução do pipeline!**  
+            ❌ **Falha na execução do pipeline!**  
             Projeto: **${{ github.repository }}**  
             Branch: `${{ github.ref_name }}`  
             📄 [Ver detalhes](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }})
 
-      # Envio de relatório por e-mail
       - name: Enviar relatório por e-mail
         uses: dawidd6/action-send-mail@v6
         with:
@@ -63,7 +63,7 @@ jobs:
           username: ${{ secrets.MAIL_USERNAME }}
           password: ${{ secrets.MAIL_PASSWORD }}
           subject: "✅ Relatório de Testes - ${{ github.repository }}"
-          to: seuemail@exemplo.com
+          to: seuemail@exemplo.com # <--- coloque seu e-mail real aqui
           from: Natalia QA <${{ secrets.MAIL_USERNAME }}>
           body: |
             Olá, time QA 👋  
