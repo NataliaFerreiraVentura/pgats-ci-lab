@@ -1,35 +1,51 @@
-#CI de Nivel 01 - Disparo manual com apenas 1 clique
-# Nome do workflow exibido na aba "Actions" do GitHub
 name: 'Execução manual'
 
-# Definição do gatilho que inicia o workflow
-# Neste caso, é necessário acionar manualmente (botão "Run workflow")
 on:
   workflow_dispatch:
 
-# Definição dos jobs (tarefas que serão executadas)
 jobs:
-  e2e-tests:  # Nome do job. Pode conter vários "steps" (passos).
-  
-    # Define o sistema operacional da máquina virtual onde os passos serão executados
-    runs-on: ubuntu-latest  # Usamos Ubuntu atualizado, fornecido pelo GitHub
+  e2e-tests:
+    runs-on: ubuntu-latest
 
-    steps:  # Lista de etapas (steps) que serão executadas em sequência
+    steps:
+      - uses: actions/checkout@v4
 
-      - uses: actions/checkout@v4  #Clone do projeto
-
-      - uses: actions/setup-node@v4 #instalando o node na versao mais recente
+      - uses: actions/setup-node@v4
         with:
           node-version: latest  
 
-      - name: 'Instalação do Yarn' #instalaçao global yarn
+      - name: 'Instalação do Yarn'
         run: npm install -g yarn  
 
       - name: 'Instalação das dependências'
         run: yarn  
-      - name: 'Instalação do Playwright'
-        run: yarn playwright install  #baixa os navegadores do playwright
 
-      #Executa os testes E2E automatizados com Playwright
+      - name: 'Instalação do Playwright'
+        run: yarn playwright install  
+
       - name: 'Executando testes E2E com Playwright'
-        run: yarn run e2e  
+        run: yarn run e2e
+
+      # Notificação de sucesso
+      - name: Notificar Discord (sucesso)
+        if: success()
+        uses: appleboy/discord-action@v1.2.0
+        with:
+          webhook_url: ${{ secrets.DISCORD_WEBHOOK_URL }}
+          message: |
+            ✅ *CI passou!*  
+            Projeto: **${{ github.repository }}**  
+            Branch: `${{ github.ref_name }}`  
+            📄 [Ver detalhes](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }})
+
+      # Notificação de falha
+      - name: Notificar Discord (falha)
+        if: failure()
+        uses: appleboy/discord-action@v1.2.0
+        with:
+          webhook_url: ${{ secrets.DISCORD_WEBHOOK_URL }}
+          message: |
+            ❌ *CI falhou!*  
+            Projeto: **${{ github.repository }}**  
+            Branch: `${{ github.ref_name }}`  
+            📄 [Ver detalhes](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }})
