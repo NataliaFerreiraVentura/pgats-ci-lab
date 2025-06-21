@@ -63,7 +63,7 @@ jobs:
           username: ${{ secrets.MAIL_USERNAME }}
           password: ${{ secrets.MAIL_PASSWORD }}
           subject: "✅ Relatório de Testes - ${{ github.repository }}"
-          to: seuemail@exemplo.com # <--- coloque seu e-mail real aqui
+          to: nataliaferreiramei@gmail.com
           from: Natalia QA <${{ secrets.MAIL_USERNAME }}>
           body: |
             Olá, time QA 👋  
