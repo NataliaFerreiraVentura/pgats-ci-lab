@@ -27,32 +27,29 @@ jobs:
         run: yarn run e2e
 
       - name: 'Listar arquivos do relatório'
-        # Usando PowerShell para listar arquivos (funciona no Windows)
         shell: powershell
         run: Get-ChildItem -Force playwright-report | Format-List
 
-      - name: Compactar relatório do Playwright
+      - name: 'Compactar relatório do Playwright'
         shell: powershell
         run: Compress-Archive -Path playwright-report\* -DestinationPath playwright-report.zip
 
-      - name: Notificar Discord (sucesso)
+      - name: 'Notificar Discord (sucesso)'
         if: success()
-        uses: appleboy/discord-action@v1.2.0
-        with:
-          webhook_url: ${{ secrets.DISCORD_WEBHOOK_URL }}
-          message: |
-            🎉 **Sucesso na execução dos testes!**  
-            Projeto: **${{ github.repository }}**  
-            Branch: ${{ github.ref_name }}  
-            📄 [Ver detalhes](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }})
+        shell: powershell
+        run: |
+          $webhookUrl = '${{ secrets.DISCORD_WEBHOOK_URL }}'
+          $body = @{
+            content = "🎉 **Sucesso na execução dos testes!**`nProjeto: **${{ github.repository }}**`nBranch: ${{ github.ref_name }} `n📄 [Ver detalhes](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }})"
+          } | ConvertTo-Json
+          Invoke-RestMethod -Uri $webhookUrl -Method POST -Body $body -ContentType 'application/json'
 
-      - name: Notificar Discord (falha)
+      - name: 'Notificar Discord (falha)'
         if: failure()
-        uses: appleboy/discord-action@v1.2.0
-        with:
-          webhook_url: ${{ secrets.DISCORD_WEBHOOK_URL }}
-          message: |
-            ❌ **Falha na execução do pipeline!**  
-            Projeto: **${{ github.repository }}**  
-            Branch: ${{ github.ref_name }}  
-            📄 [Ver detalhes](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }})
+        shell: powershell
+        run: |
+          $webhookUrl = '${{ secrets.DISCORD_WEBHOOK_URL }}'
+          $body = @{
+            content = "❌ **Falha na execução do pipeline!**`nProjeto: **${{ github.repository }}**`nBranch: ${{ github.ref_name }} `n📄 [Ver detalhes](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }})"
+          } | ConvertTo-Json
+          Invoke-RestMethod -Uri $webhookUrl -Method POST -Body $body -ContentType 'application/json'
