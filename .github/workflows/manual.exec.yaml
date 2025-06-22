@@ -49,23 +49,6 @@ jobs:
                      "Projeto: **$env:REPO**`n" +
                      "Branch: $env:BRANCH`n" +
                      "📄 [Ver detalhes]($env:SERVER_URL/$env:REPO/actions/runs/$env:RUN_ID)"
-          $body = @{ content = $message } | ConvertTo-Json -Compress
-          Invoke-RestMethod -Uri $webhookUrl -Method POST -Body $body -ContentType 'application/json'
-
-      - name: 'Notificar Discord (falha)'
-        if: failure()
-        shell: powershell
-        env:
-          REPO: ${{ github.repository }}
-          BRANCH: ${{ github.ref_name }}
-          RUN_ID: ${{ github.run_id }}
-          SERVER_URL: ${{ github.server_url }}
-          WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
-        run: |
-          $webhookUrl = $env:WEBHOOK_URL
-          $message = "❌ **Falha na execução do pipeline!**`n" +
-                     "Projeto: **$env:REPO**`n" +
-                     "Branch: $env:BRANCH`n" +
-                     "📄 [Ver detalhes]($env:SERVER_URL/$env:REPO/actions/runs/$env:RUN_ID)"
-          $body = @{ content = $message } | ConvertTo-Json -Compress
-          Invoke-RestMethod -Uri $webhookUrl -Method POST -Body $body -ContentType 'application/json'
+          $bodyJson = @{ content = $message } | ConvertTo-Json -Compress
+          $bytes = [System.Text.Encoding]::UTF8.GetBytes($bodyJson)
+          Invoke-RestMethod -Uri $webhookUrl -Method POST -Body $bytes -ContentType 'application/json'
