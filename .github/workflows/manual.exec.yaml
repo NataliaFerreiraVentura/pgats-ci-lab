@@ -47,10 +47,10 @@ jobs:
           [Console]::OutputEncoding = [Text.UTF8Encoding]::new()
 
           $webhookUrl = $env:WEBHOOK_URL
-          $message = "🎉 **Sucesso na execução dos testes!**`n" +
+          $message = " **Sucesso na execução dos testes!**`n" +
                      "Projeto: **$env:REPO**`n" +
                      "Branch: $env:BRANCH`n" +
-                     "📄 [Ver detalhes]($env:SERVER_URL/$env:REPO/actions/runs/$env:RUN_ID)"
+                     " [Ver detalhes]($env:SERVER_URL/$env:REPO/actions/runs/$env:RUN_ID)"
 
           $bodyJson = @{ content = $message } | ConvertTo-Json -Compress
           $bytes = [System.Text.Encoding]::UTF8.GetBytes($bodyJson)
