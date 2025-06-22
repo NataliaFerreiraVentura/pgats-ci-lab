@@ -53,23 +53,3 @@ jobs:
             Projeto: **${{ github.repository }}**  
             Branch: `${{ github.ref_name }}`  
             📄 [Ver detalhes](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }})
-
-      - name: Enviar relatório por e-mail
-        uses: dawidd6/action-send-mail@v6
-        with:
-          server_address: smtp.gmail.com
-          server_port: 465
-          secure: true
-          username: ${{ secrets.MAIL_USERNAME }}
-          password: ${{ secrets.MAIL_PASSWORD }}
-          subject: "✅ Relatório de Testes - ${{ github.repository }}"
-          to: nataliaferreiramei@gmail.com
-          from: Natalia QA <${{ secrets.MAIL_USERNAME }}>
-          body: |
-            Olá, time QA 👋  
-            Segue em anexo o relatório de testes gerado automaticamente pelo GitHub Actions.
-
-            ✅ Execução: ${{ github.run_number }}  
-            🔗 [Ver detalhes no GitHub](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }})
-          attachments: playwright-report.zip
-          convert_markdown: true
