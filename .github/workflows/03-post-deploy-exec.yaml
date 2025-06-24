@@ -1,0 +1,82 @@
+#CI de nivel 03 -disparo apos a conclusao de um pipeline
+name: 'Execução por deploy' #NOme do pipeline
+#Regras de disparo (gatilhos/triggers) 
+# gatilho execução manual = workflow_dispatch
+#gatilho de exec agendamento = schedule
+# gatilho após a conclusão de outro workflow = workflow_run
+on:
+  workflow_run: # Dispara quando outro workflow é concluído
+    workflows: ['Execução manual'] # Lista de workflows que disparam este
+    types:
+      - completed  # Dispara apenas quando o workflow anterior é concluído
+
+jobs:
+  e2e-tests:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: latest  
+
+      - name: 'Instalação do Yarn'
+        run: npm install -g yarn  
+
+      - name: 'Instalação das dependências'
+        run: yarn  
+
+      - name: 'Instalação do Playwright'
+        run: yarn playwright install  
+
+      - name: 'Executando testes E2E com Playwright'
+        run: yarn run e2e
+
+      - name: 'Listar arquivos do relatório'
+        run: ls -lha playwright-report
+
+      - name: Compactar relatório do Playwright
+        run: zip -r playwright-report.zip playwright-report
+
+      - name: Notificar Discord (sucesso)
+        if: success()
+        uses: appleboy/discord-action@v1.2.0
+        with:
+          webhook_url: ${{ secrets.DISCORD_WEBHOOK_URL }}
+          message: |
+            🎉 **Sucesso na execução dos testes!**  
+            Projeto: **${{ github.repository }}**  
+            Branch: `${{ github.ref_name }}`  
+            📄 [Ver detalhes](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }})
+
+      - name: Notificar Discord (falha)
+        if: failure()
+        uses: appleboy/discord-action@v1.2.0
+        with:
+          webhook_url: ${{ secrets.DISCORD_WEBHOOK_URL }}
+          message: |
+            ❌ **Falha na execução do pipeline!**  
+            Projeto: **${{ github.repository }}**  
+            Branch: `${{ github.ref_name }}`  
+            📄 [Ver detalhes](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }})
+
+      - name: Enviar relatório por e-mail
+        uses: dawidd6/action-send-mail@v6
+        with:
+          server_address: smtp.gmail.com
+          server_port: 465
+          secure: true
+          username: ${{ secrets.MAIL_USERNAME }}
+          password: ${{ secrets.MAIL_PASSWORD }}
+          subject: "✅ Relatório de Testes - ${{ github.repository }}"
+          to: nataliaferreiramei@gmail.com
+          from: Natalia QA <${{ secrets.MAIL_USERNAME }}>
+          body: |
+            Olá, time QA 👋  
+            Segue em anexo o relatório de testes gerado automaticamente pelo GitHub Actions.
+
+            ✅ Execução: ${{ github.run_number }}  
+            🔗 [Ver detalhes no GitHub](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }})
+          attachments: playwright-report.zip
+          convert_markdown: true
