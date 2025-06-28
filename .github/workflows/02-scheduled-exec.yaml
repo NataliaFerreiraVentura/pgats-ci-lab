@@ -35,3 +35,10 @@ jobs:
       #Executa os testes E2E automatizados com Playwright
       - name: 'Executando testes E2E com Playwright'
         run: yarn run e2e  
+        
+      - name: Upload do relatório para o GitHub
+        uses: actions/upload-artifact@v4
+        if: ${{ !cancelled()}} #nao ira roda se for cancelado 
+        with:
+          name: Relatorio
+          path: ./playwright-report

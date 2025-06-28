@@ -26,13 +26,12 @@ jobs:
       - name: 'Executando testes E2E com Playwright'
         run: yarn run e2e
 
-      - name: 'Listar arquivos do relatório'
-        shell: powershell
-        run: Get-ChildItem -Force playwright-report | Format-List
-
-      - name: 'Compactar relatório do Playwright'
-        shell: powershell
-        run: Compress-Archive -Path playwright-report\* -DestinationPath playwright-report.zip
+      - name: Upload do relatório para o GitHub
+        uses: actions/upload-artifact@v4
+        if: ${{ !cancelled()}} #nao ira roda se for cancelado 
+        with:
+          name: Relatorio
+          path: ./playwright-report
 
       - name: 'Notificar Discord (sucesso)'
         if: success()
