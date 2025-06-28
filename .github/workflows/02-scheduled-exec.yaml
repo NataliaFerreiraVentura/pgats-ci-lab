@@ -7,38 +7,36 @@ name: 'Execução agendada'
 on:
   # schedule:
   #   - cron: '0 3 * * *'  # ← comentado ou removido: agendamento desativado
-  workflow_dispatch:       # mantém a execução manual ativada
+  workflow_dispatch: # mantém a execução manual ativada
 
 # Definição dos jobs (tarefas que serão executadas)
 jobs:
-  e2e-tests:  # Nome do job. Pode conter vários "steps" (passos).
-  
+  e2e-tests: # Nome do job. Pode conter vários "steps" (passos).
     # Define o sistema operacional da máquina virtual onde os passos serão executados
-    runs-on: ubuntu-latest  # Usamos Ubuntu atualizado, fornecido pelo GitHub
+    runs-on: ubuntu-latest # Usamos Ubuntu atualizado, fornecido pelo GitHub
 
-    steps:  # Lista de etapas (steps) que serão executadas em sequência
-
-      - uses: actions/checkout@v4  #Clone do projeto
+    steps: # Lista de etapas (steps) que serão executadas em sequência
+      - uses: actions/checkout@v4 #Clone do projeto
 
       - uses: actions/setup-node@v4 #instalando o node na versao mais recente
         with:
-          node-version: latest  
+          node-version: latest
 
       - name: 'Instalação do Yarn' #instalaçao global yarn
-        run: npm install -g yarn  
+        run: npm install -g yarn
 
       - name: 'Instalação das dependências'
-        run: yarn  
+        run: yarn
       - name: 'Instalação do Playwright'
-        run: yarn playwright install  #baixa os navegadores do playwright
+        run: yarn playwright install #baixa os navegadores do playwright
 
       #Executa os testes E2E automatizados com Playwright
       - name: 'Executando testes E2E com Playwright'
-        run: yarn run e2e  
-        
+        run: yarn run e2e
+
       - name: Upload do relatório para o GitHub
         uses: actions/upload-artifact@v4
-        if: ${{ !cancelled()}} #nao ira roda se for cancelado 
+        if: ${{ !cancelled()}} #nao ira roda se for cancelado
         with:
           name: Relatorio
           path: ./playwright-report

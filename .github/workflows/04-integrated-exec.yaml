@@ -39,16 +39,16 @@ jobs:
 
       - uses: actions/setup-node@v4
         with:
-          node-version: latest  
+          node-version: latest
 
       - name: Instalando Yarn
-        run: npm install -g yarn  
+        run: npm install -g yarn
 
       - name: Instalando dependências
-        run: yarn  
+        run: yarn
 
       - name: Instalando Playwright
-        run: yarn playwright install  
+        run: yarn playwright install
 
       - name: Executando testes E2E com Playwright
         run: yarn run e2e

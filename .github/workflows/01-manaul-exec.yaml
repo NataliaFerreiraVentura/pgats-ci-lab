@@ -12,16 +12,16 @@ jobs:
 
       - uses: actions/setup-node@v4
         with:
-          node-version: latest  
+          node-version: latest
 
       - name: 'Instalação do Yarn'
-        run: npm install -g yarn  
+        run: npm install -g yarn
 
       - name: 'Instalação das dependências'
-        run: yarn  
+        run: yarn
 
       - name: 'Instalação do Playwright'
-        run: yarn playwright install  
+        run: yarn playwright install
 
       - name: 'Executando testes E2E com Playwright'
         run: yarn run e2e
@@ -62,7 +62,7 @@ jobs:
           secure: true
           username: ${{ secrets.MAIL_USERNAME }}
           password: ${{ secrets.MAIL_PASSWORD }}
-          subject: "✅ Relatório de Testes - ${{ github.repository }}"
+          subject: '✅ Relatório de Testes - ${{ github.repository }}'
           to: nataliaferreiramei@gmail.com
           from: Natalia QA <${{ secrets.MAIL_USERNAME }}>
           body: |
