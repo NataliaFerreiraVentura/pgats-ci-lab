@@ -1,0 +1,57 @@
+name: 'Execução manual Windows self-hosted runner'
+
+on:
+  workflow_dispatch:
+
+jobs:
+  e2e-tests:
+    runs-on: self-hosted # assume Windows self-hosted runner
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 'latest'
+
+      - name: 'Instalação do Yarn'
+        run: npm install -g yarn
+
+      - name: 'Instalação das dependências'
+        run: yarn
+
+      - name: 'Instalação do Playwright'
+        run: yarn playwright install
+
+      - name: 'Executando testes E2E com Playwright'
+        run: yarn run e2e
+
+      - name: Upload do relatório para o GitHub
+        uses: actions/upload-artifact@v4
+        if: ${{ !cancelled()}} #nao ira roda se for cancelado
+        with:
+          name: Relatorio
+          path: ./playwright-report
+
+      - name: 'Notificar Discord (sucesso)'
+        if: success()
+        shell: powershell
+        env:
+          REPO: ${{ github.repository }}
+          BRANCH: ${{ github.ref_name }}
+          RUN_ID: ${{ github.run_id }}
+          SERVER_URL: ${{ github.server_url }}
+          WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
+        run: |
+          [Console]::OutputEncoding = [Text.UTF8Encoding]::new()
+
+          $webhookUrl = $env:WEBHOOK_URL
+          $message = " **Sucesso na execução dos testes!**`n" +
+                     "Projeto: **$env:REPO**`n" +
+                     "Branch: $env:BRANCH`n" +
+                     " [Ver detalhes]($env:SERVER_URL/$env:REPO/actions/runs/$env:RUN_ID)"
+
+          $bodyJson = @{ content = $message } | ConvertTo-Json -Compress
+          $bytes = [System.Text.Encoding]::UTF8.GetBytes($bodyJson)
+
+          Invoke-RestMethod -Uri $webhookUrl -Method POST -Body $bytes -ContentType 'application/json; charset=utf-8'
