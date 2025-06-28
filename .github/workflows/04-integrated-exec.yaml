@@ -1,6 +1,6 @@
 #CI de N4 - disparo dos testes dentro do pipe de dev
 
-name: 'eXECUÇÃO INTEGRADA'
+name: 'Execução integrada'
 
 on:
   workflow_dispatch:
@@ -34,7 +34,7 @@ jobs:
 
       - name: Executando testes unitarios
         run: yarn test
-        
+
   e2e-tests:
     runs-on: ubuntu-latest
 
